@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
@@ -15,14 +15,15 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
-    <script src="./datepicker.js"></script>    
+    <script src="./datepicker.js"></script>
 
     <link rel="stylesheet" href="./datepicker.css">
-    
-    
+
+
     <script>
         $(document).ready(function () {
-            
+
+            $("#solicitar").prop('disabled', true);
             //carga ciudades
             $.ajax({
                 type: "POST",
@@ -30,7 +31,7 @@
                 async: false,
                 dataType: "json",
                 success: function (data) {
-                    console.log("Ciudades:", data);
+                    // console.log("Ciudades:", data);
                     $.each(data, function (key, registro) {
                         $("#citys").append('<option value=' + registro.codigo + '>' + registro.ciudad + '</option>');
                     });
@@ -42,22 +43,23 @@
             //mostrar fechas
             mostrarFechas();
             //calendar
-            $("#fecha_expedicion").datepicker({        
+            $("#fecha_expedicion").datepicker({
                 format: 'yyyy-mm-dd',
-                autoclose: true        
+                autoclose: true
             });
             //calendar
             $("#fecha_nacimiento").datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
             });
-            
+            //evento para desabilitar el boton de solicitar si se ha cambiado el monto.
             $("#monto").change(function () {
                 $("#solicitar").prop('disabled', true);
             });
-
+            //cargar afiliado dependiendo de la ciudad
             $('#citys').change(function () {
                 $("#afiliado").html("");
+                $('#afiliado').append('<option disabled selected></option>');
                 var _ciudad = $(this).val();
                 var arr = { ciudad: _ciudad };
                 $.ajax({
@@ -78,13 +80,76 @@
                     }
                 });
             });
-
+            //cargar plazos dependiendo del tipo de carrera
             $('#tipo_carrera').change(function () {
                 var plazos = buildDues();
                 // console.log("plazos:", plazos);
-                $("#num_cuotas").html("")
+                $("#num_cuotas").html("");
+                $('#num_cuotas').append('<option disabled selected></option>');
                 $.each(plazos, function (indice, data) {
                     $("#num_cuotas").append('<option value=' + data + '>' + data + '</option>');
+                });
+            });
+
+            //Evento que valida al salir del input si cliente existe, si existe inabilita el formulario y 
+            //muestra msj informativo, en caso de que no, puede siguir llenando el formulario
+            $('#identificacion').blur(function () {
+                var _identificacion = $(this).val();
+                $.ajax({
+                    type: "GET",
+                    url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/validate_customer/' + _identificacion,
+                    contentType: 'application/json',
+                    success: function (data) {
+                        // console.info("existe:", data.escliente);
+                        //  alert("Cliente:"+ (data.escliente == "true" ? "Eres cliente, vamos al login" : "No es cliente"));
+                        if (data.escliente == "true") {
+                            $("#simular").prop('disabled', true);
+                            $("#citys").prop('disabled', true);
+                            $("#fecha_pago").prop('disabled', true);
+                            $("#afiliado").prop('disabled', true);
+                            $("#tipo_carrera").prop('disabled', true);
+                            $("#monto").prop('disabled', true);
+                            $("#num_cuotas").prop('disabled', true);
+                            $("#tipo_identificacion").prop('disabled', true);
+                            // $("#identificacion").prop('disabled',true);
+                            $("#fecha_expedicion").prop('disabled', true);
+                            $("#fecha_nacimiento").prop('disabled', true);
+                            $("#primer_apellido").prop('disabled', true);
+                            $("#primer_nombre").prop('disabled', true);
+                            $("#email").prop('disabled', true);
+                            $("#email_confirm").prop('disabled', true);
+                            $("#telefono").prop('disabled', true);
+                            $("#ingresos_usuario").prop('disabled', true);
+                            $("#acceptTerms").prop('disabled', true);
+                            // $("#identificacion").focus();
+                            document.getElementById("identificacion").focus();
+                            // alert("Vemos que eres un cliente Fintra, inicia sesión");
+                        }
+                        else {
+                            $("#simular").prop('disabled', false);
+                            $("#citys").prop('disabled', false);
+                            $("#fecha_pago").prop('disabled', false);
+                            $("#afiliado").prop('disabled', false);
+                            $("#tipo_carrera").prop('disabled', false);
+                            $("#monto").prop('disabled', false);
+                            $("#num_cuotas").prop('disabled', false);
+                            $("#tipo_identificacion").prop('disabled', false);
+                            // $("#identificacion").prop('disabled',true);
+                            $("#fecha_expedicion").prop('disabled', false);
+                            $("#fecha_nacimiento").prop('disabled', false);
+                            $("#primer_apellido").prop('disabled', false);
+                            $("#primer_nombre").prop('disabled', false);
+                            $("#email").prop('disabled', false);
+                            $("#email_confirm").prop('disabled', false);
+                            $("#telefono").prop('disabled', false);
+                            $("#ingresos_usuario").prop('disabled', false);
+                            $("#acceptTerms").prop('disabled', false);
+                            document.getElementById("fecha_expedicion").focus();
+                        }
+                    },
+                    error: function () {
+                        console.log("No se ha podido obtener la información");
+                    }
                 });
             });
 
@@ -352,17 +417,51 @@
                 var ingresos_usuario = $("#ingresos_usuario").val();
                 var acceptTerms = document.getElementById('acceptTerms');
 
-               
-                if (citys == null || citys.length == 0 || fecha_pago == null ||  fecha_pago.length == 0 ||
-                    afiliado == null || afiliado.length == 0 || tipo_carrera === null || tipo_carrera == 0 ||
-                    monto == null || monto.length == 0 || isNaN(monto) || num_cuotas == null || num_cuotas.length == 0 || 
-                    tipo_identificacion == null || tipo_identificacion.length == 0 || identificacion == null || isNaN(identificacion) ||
-                    identificacion.length == 0 || /^\s+$/.test(identificacion) || primer_apellido.length == 0 || /^\s+$/.test(primer_apellido) || 
-                    primer_nombre.length == 0 || /^\s+$/.test(primer_nombre) || validateEmail(email) || validateEmail(email_confirm) ||
-                    telefono.length == 0 || !validarSiNumero(telefono) || ingresos_usuario.length == 0 || 
-                    !validarSiNumero(ingresos_usuario) || acceptTerms.checked == false || email != email_confirm) {
-                    alert("Alguno de los campos no cumple con nuestras politicas");
+                //Remove Class: $("p").removeClass("myClass yourClass")
+                //Add Class: $("#identificacion").addClass("is-invalid");
+                // $("input ").addClass("is-valid");
+                // $("select ").addClass("is-valid");
+                // $("select ").addClass("is-valid");
+
+                if (citys == null || citys.length == 0) {
+                    $("#citys").addClass("is-invalid");
+                } else if (fecha_pago == null || fecha_pago.length == 0) {
+                    $("#fecha_pago").addClass("is-invalid");
+                } else if (afiliado == null || afiliado.length == 0) {
+                    $("#afiliado").addClass("is-invalid");
+                } else if (tipo_carrera === null || tipo_carrera == 0) {
+                    $("#tipo_carrera").addClass("is-invalid");
+                } else if (monto == null || monto.length == 0 || isNaN(monto)) {
+                    $("#monto").addClass("is-invalid");
+                } else if (num_cuotas == null || num_cuotas.length == 0) {
+                    $("#num_cuotas").addClass("is-invalid");
+                } else if (tipo_identificacion == null || tipo_identificacion.length == 0) {
+                    $("#tipo_identificacion").addClass("is-invalid");
+                } else if (identificacion == null || isNaN(identificacion) || identificacion.length == 0 || /^\s+$/.test(identificacion)) {
+                    $("#identificacion").addClass("is-invalid");
+                } else if (primer_apellido.length == 0 || /^\s+$/.test(primer_apellido)) {
+                    $("#primer_apellido").addClass("is-invalid");
+                } else if (primer_nombre.length == 0 || /^\s+$/.test(primer_nombre)) {
+                    $("#primer_nombre").addClass("is-invalid");
+                } else if (validateEmail(email)) {
+                    $("#email").addClass("is-invalid");
+                } else if (validateEmail(email)) {
+                    $("#email_confirm").addClass("is-invalid");
+                } else if (telefono.length == 0 || !validarSiNumero(telefono)) {
+                    $("#telefono").addClass("is-invalid");
+                } else if (ingresos_usuario.length == 0 || !validarSiNumero(ingresos_usuario)) {
+                    $("#ingresos_usuario").addClass("is-invalid");
+                } else if (acceptTerms.checked == false) {
+                    $("#not_accept_term").show();
+                } else if (email != email_confirm) {
+                    $("#email").addClass("is-invalid");
+                    $("#email_confirm").addClass("is-invalid");
                 } else {
+                    $("select").removeClass("is-invalid");
+                    $("input").removeClass("is-invalid");
+                    $("#not_accept_term").hide();
+                    console.log("Form Correct!");
+
                     var arr = {
                         monto: monto,
                         num_cuotas: num_cuotas,
@@ -389,9 +488,7 @@
                             console.log("No se ha podido obtener la información");
                         }
                     });
-
                 }
-
             });
 
             $("#solicitar").click(function (event) {
@@ -416,17 +513,56 @@
                 var valor_cuota = $("#valor_cuota").text();
                 var valor_aval = $("#valor_aval").text();
 
-                if (citys == null || citys.length == 0 || fecha_pago == null || fecha_pago.length == 0 ||
-                    afiliado == null || afiliado.length == 0 || tipo_carrera === null || tipo_carrera == 0 ||
-                    monto == null || monto.length == 0 || isNaN(monto) || num_cuotas == null || num_cuotas.length == 0 ||
-                    tipo_identificacion == null || tipo_identificacion.length == 0 || identificacion == null || isNaN(identificacion) ||
-                    identificacion.length == 0 || /^\s+$/.test(identificacion) || primer_apellido.length == 0 || /^\s+$/.test(primer_apellido) ||
-                    primer_nombre.length == 0 || /^\s+$/.test(primer_nombre) || validateEmail(email) || validateEmail(email_confirm) ||
-                    telefono.length == 0 || !validarSiNumero(telefono) || ingresos_usuario.length == 0 ||
-                    !validarSiNumero(ingresos_usuario) || acceptTerms.checked == false || email != email_confirm) {
-                    alert("Alguno de los campos no cumple con nuestras politicas");
+                //Remove Class: $("p").removeClass("myClass yourClass")
+                //Add Class: $("#identificacion").addClass("is-invalid");
+                // $("input ").addClass("is-valid");
+                // $("select ").addClass("is-valid");
+                // $("select ").addClass("is-valid");
+
+                if (citys == null || citys.length == 0) {
+                    $("#citys").addClass("is-invalid");
+                } else if (fecha_pago == null || fecha_pago.length == 0) {
+                    $("#fecha_pago").addClass("is-invalid");
+                } else if (afiliado == null || afiliado.length == 0) {
+                    $("#afiliado").addClass("is-invalid");
+                } else if (tipo_carrera === null || tipo_carrera == 0) {
+                    $("#tipo_carrera").addClass("is-invalid");
+                } else if (monto == null || monto.length == 0 || isNaN(monto)) {
+                    $("#monto").addClass("is-invalid");
+                } else if (num_cuotas == null || num_cuotas.length == 0) {
+                    $("#num_cuotas").addClass("is-invalid");
+                } else if (tipo_identificacion == null || tipo_identificacion.length == 0) {
+                    $("#tipo_identificacion").addClass("is-invalid");
+                } else if (identificacion == null || isNaN(identificacion) || identificacion.length == 0 || /^\s+$/.test(identificacion)) {
+                    $("#identificacion").addClass("is-invalid");
+                } else if (fecha_expedicion == null || fecha_expedicion.length == 0) {
+                    $("#fecha_expedicion").addClass("is-invalid");
+                } else if (fecha_nacimiento == null || fecha_nacimiento.length == 0) {
+                    $("#fecha_nacimiento").addClass("is-invalid");
+                } else if (primer_apellido.length == 0 || /^\s+$/.test(primer_apellido)) {
+                    $("#primer_apellido").addClass("is-invalid");
+                } else if (primer_nombre.length == 0 || /^\s+$/.test(primer_nombre)) {
+                    $("#primer_nombre").addClass("is-invalid");
+                } else if (validateEmail(email)) {
+                    $("#email").addClass("is-invalid");
+                } else if (validateEmail(email)) {
+                    $("#email_confirm").addClass("is-invalid");
+                } else if (telefono.length == 0 || !validarSiNumero(telefono)) {
+                    $("#telefono").addClass("is-invalid");
+                } else if (ingresos_usuario.length == 0 || !validarSiNumero(ingresos_usuario)) {
+                    $("#ingresos_usuario").addClass("is-invalid");
+                } else if (acceptTerms.checked == false) {
+                    $("#not_accept_term").show();
+                } else if (email != email_confirm) {
+                    $("#email").addClass("is-invalid");
+                    $("#email_confirm").addClass("is-invalid");
                 } else {
-                    
+
+                    $("select").removeClass("is-invalid");
+                    $("input").removeClass("is-invalid");
+                    $("#not_accept_term").hide();
+                    console.log("Form Correct!");
+
                     var d = new Date();
                     var month = d.getMonth() + 1;
                     var day = d.getDate();
@@ -471,66 +607,99 @@
                         headers: {
                             'dataType': 'json',
                             'contentType': 'application/json',
-                            'Content-Type': 'application/json', 
+                            'Content-Type': 'application/json',
                             'version': '2.0'
                         },
                         data: JSON.stringify(presol),
                         success: function (data) {
                             console.log('Msg:', data.data.msg);
-                            alert(data.data.msg + 'Numero de Slicitud: ' + data.data.numero_solicitud);                            
+                            alert(data.data.msg + 'Numero de Slicitud: ' + data.data.numero_solicitud);
                             $("#presolicitud")[0].reset();
                             $("#sim").hide();
-
                         },
                         error: function () {
                             console.log("No se ha podido obtener la información");
                         }
                     });
-
                 }
-
             });
 
-            
-            //Utils
-            
-            //Validar numero
-            function validarSiNumero(numero) {
-                if (/^([0-9])*$/.test(numero)){
-                    return true;
-                }else{
-                    return false
-                }
 
-            }
-
-            //Validar Email
-            function validateEmail(_mail){
-                var exp = /\w+@\w+\.+([a-z]{2,4})$/;
-                if (exp.test(_mail)) {
-                    return false;
-                }else{
-                    return true;
-                }
-
-            }
         });
 
-        
+        //Utils
+
+        //Validar numero
+        function validarSiNumero(numero) {
+            if (/^([0-9])*$/.test(numero)) {
+                return true;
+            } else {
+                return false
+            }
+
+        }
+
+        //Validar Email
+        function validateEmail(_mail) {
+            var exp = /\w+@\w+\.+([a-z]{2,4})$/;
+            if (exp.test(_mail)) {
+                return false;
+            } else {
+                return true;
+            }
+
+        }
+
+        function validateFlied(field) {
+            var valueInput = $(field).val();
+            var typeInput = $(field).prop('type') == 'select-one';
+            var nameInput = $(field).attr("name");
+
+            if (typeInput) { //tipo Select
+                if (valueInput != null && !valueInput.length == 0) {
+                    $(field).removeClass("is-invalid");
+                } else {
+                    $(field).addClass("is-invalid");
+                }
+            } else if (!typeInput && (nameInput == "email" || nameInput == "email_confirm")) { //Email 
+                if (validateEmail(valueInput)) {
+                    $(field).addClass("is-invalid");
+                } else {
+                    $(field).removeClass("is-invalid");
+                }
+            } else if (!typeInput && (nameInput == "primer_apellido" || nameInput == "primer_nombre")) { //Email 
+                if (valueInput.length == 0 || /^\s+$/.test(valueInput)) {
+                    $(field).addClass("is-invalid");
+                } else {
+                    $(field).removeClass("is-invalid");
+                }
+            } else {   //tipo input numerico
+                if (valueInput.length != 0 && validarSiNumero(valueInput)) {
+                    $(field).removeClass("is-invalid");
+                } else {
+                    $(field).addClass("is-invalid");
+                }
+            }
+
+
+
+        }
+
     </script>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-             <div class="col-md-8"> <!--esto no va -->
+            <div class="col-md-8">
+                <!--esto no va -->
                 <div class="fusion-builder-row fusion-row">
                     <form id="presolicitud">
                         <div class="row">
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="ciudad">Ciudad</label>
-                                    <select class="form-control" id="citys" required>
+                                    <select class="form-control" id="citys" onblur="validateFlied(this)" required>
                                         <option disabled selected value></option>
                                     </select>
                                 </div>
@@ -538,7 +707,7 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="fecha-pago">Fecha primer pago</label>
-                                    <select class="form-control" id="fecha_pago" required>
+                                    <select class="form-control" id="fecha_pago" onblur="validateFlied(this)" required>
                                         <option disabled selected value></option>
                                     </select>
                                 </div>
@@ -546,7 +715,7 @@
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="institución-educativa">Institución educativa:</label>
-                                    <select class="form-control" id="afiliado" required>
+                                    <select class="form-control" id="afiliado" onblur="validateFlied(this)" required>
                                         <option disabled selected value></option>
                                     </select>
                                 </div>
@@ -554,7 +723,8 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="tipo-carrera">Tipo de carrera:</label>
-                                    <select class="form-control" id="tipo_carrera" required>
+                                    <select class="form-control" id="tipo_carrera" onblur="validateFlied(this)"
+                                        required>
                                         <option disabled selected value></option>
                                         <option value="PREGRADO">Pregrado</option>
                                         <option value="POSGRADO">Posgrado</option>
@@ -566,14 +736,15 @@
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="valor-semestre">Valor semestre:</label>
-                                    <input type="text" class="form-control" id="monto" required>
+                                    <input type="text" class="form-control" id="monto" onblur="validateFlied(this)"
+                                        required>
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="plazo-carrera">Plazo crédito:</label>
-                                    <select class="form-control" id="num_cuotas" required>
+                                    <select class="form-control" id="num_cuotas" onblur="validateFlied(this)" required>
                                         <option disabled selected value></option>
                                     </select>
                                 </div>
@@ -582,7 +753,8 @@
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="tipo-cc">Tipo de identificación:</label>
-                                    <select class="form-control" id="tipo_identificacion" required>
+                                    <select class="form-control" id="tipo_identificacion" onblur="validateFlied(this)"
+                                        required>
                                         <option disabled selected value></option>
                                         <option value="CED">Cedula de ciudadania</option>
                                     </select>
@@ -592,63 +764,80 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="identificacion"> Identificación:</label>
-                                    <input type="text" class="form-control" id="identificacion" required>
+                                    <input type="text" class="form-control" id="identificacion"
+                                        onblur="validateFlied(this)" required>
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="fecha-exp">Fecha de expedición de la cédula:</label>
-                                    <input type="text" class="form-control" id="fecha_expedicion" required readonly>
+                                    <input type="text" class="form-control" id="fecha_expedicion"
+                                        name="fecha_expedicion" required readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="fecha-nacimiento">Fecha de nacimiento:</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento" required readonly>
+                                    <input type="text" class="form-control" id="fecha_nacimiento"
+                                        name="fecha_nacimiento" required readonly>
                                 </div>
                             </div>
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="primer-apellido">Primer Apellido:</label>
-                                    <input type="text" class="form-control" id="primer_apellido" required pattern="[A-Za-z]+">
+                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido"
+                                        onblur="validateFlied(this)" required pattern="[A-Za-z]+">
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="primer-nombre">Primer nombre:</label>
-                                    <input type="text" class="form-control" id="primer_nombre" required pattern="[A-Za-z]+">
+                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre"
+                                        onblur="validateFlied(this)" required pattern="[A-Za-z]+">
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="email">Email activo:</label>
-                                    <input id="email" class="form-control" title="Email errado" name="email" type="email" 
-                                        required />
+                                    <input id="email" class="form-control" title="" onblur="validateFlied(this)"
+                                        name="email" type="email" required />
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="email">Confirmar Email:</label>
-                                    <input id="email_confirm" class="form-control" title="Email errado" name="email_confirm" type="email" required />
+                                    <input id="email_confirm" class="form-control" onblur="validateFlied(this)"
+                                        name="email_confirm" type="email" required />
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="telefono">Celular:</label>
-                                    <input type="text" class="form-control" maxlength="10" id="telefono" required >
+                                    <input type="text" class="form-control" maxlength="10" id="telefono"
+                                        onblur="validateFlied(this)" required>
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="ingresos">Ingresos mensuales:</label>
-                                    <input type="text" class="form-control" id="ingresos_usuario" required>
+                                    <input type="text" class="form-control" id="ingresos_usuario"
+                                        onblur="validateFlied(this)" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 form--der" id="sim" style="display: none; border-radius: 5px;">
+                                <div class="form-group">
+                                    <div class="btn btn--general">
+                                        Valor apróximado de cuota $<p id="valor_cuota"></p>
+                                        <p style="display: none" id="valor_aval"></p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -658,6 +847,8 @@
                                         <label><input name="remember" type="checkbox" id="acceptTerms" /><a href=""
                                                 style="color: #37BFFA; margin-left: 0.5rem; border-bottom: 1px #37BFFA solid;">Acepto
                                                 los términos y condiciones</a></label>
+                                        <p id="not_accept_term" class="text-danger" style="display: none">Debes Acptar
+                                            los Terminos y condiciones</p>
                                     </div>
                                     <div class="content--btn">
                                         <button class="fusion-button button-flat simular--btn btn--general"
@@ -669,17 +860,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" id="sim" style="display: none">
-                            <div class="col-md-6 form--der">
-                                <div class="form-group">
-                                    <label id="simular_label">SIMULACIÓN DE CRÉDITO PRE-APROBADA</label>
-                                    <div class="btn btn--general">
-                                        Valor apróximado de cuota $:<p id="valor_cuota"></p>
-                                        <p style="display: none" id="valor_aval"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                       
                     </form>
                 </div>
             </div>
