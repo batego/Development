@@ -15,13 +15,16 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
+
     <script src="./datepicker.js"></script>
 
     <link rel="stylesheet" href="./datepicker.css">
 
-
     <script>
         $(document).ready(function () {
+
+            solonumerosIngresos();
+            solonumerosMonto();
 
             $("#solicitar").prop('disabled', true);
             //carga ciudades
@@ -54,6 +57,9 @@
             });
             //evento para desabilitar el boton de solicitar si se ha cambiado el monto.
             $("#monto").change(function () {
+                $("#solicitar").prop('disabled', true);
+            });
+            $("#identificacion").change(function () {
                 $("#solicitar").prop('disabled', true);
             });
             //cargar afiliado dependiendo de la ciudad
@@ -403,7 +409,7 @@
                 var fecha_pago = $("#fecha_pago").val();
                 var afiliado = $("#afiliado").val();
                 var tipo_carrera = $("#tipo_carrera").val();
-                var monto = $("#monto").val();
+                var monto = ($("#monto").val()).replace(/,/g, "");
                 var num_cuotas = $("#num_cuotas").val();
                 var tipo_identificacion = $("#tipo_identificacion").val();
                 var identificacion = $("#identificacion").val();
@@ -414,8 +420,22 @@
                 var email = $("#email").val();
                 var email_confirm = $("#email_confirm").val();
                 var telefono = $("#telefono").val();
-                var ingresos_usuario = $("#ingresos_usuario").val();
+                var ingresos_usuario = ($("#ingresos_usuario").val()).replace(/,/g, "");
                 var acceptTerms = document.getElementById('acceptTerms');
+
+                let val1 = fecha_nacimiento.split("-");
+                let val2 = fecha_expedicion.split("-");
+                let ano1 = val1[0];
+                let ano2 = val2[0];
+                // if (nac == "" || nac != null) {
+                //     if (ano2 < ano1) {
+                //         $(field).addClass("is-invalid");
+                //     } else if ((ano2 - ano1) < 18) {
+                //         $(field).addClass("is-invalid");
+                //     } else {
+                //         $(field).removeClass("is-invalid");
+                //     }
+                // }
 
                 //Remove Class: $("p").removeClass("myClass yourClass")
                 //Add Class: $("#identificacion").addClass("is-invalid");
@@ -431,7 +451,7 @@
                     $("#afiliado").addClass("is-invalid");
                 } else if (tipo_carrera === null || tipo_carrera == 0) {
                     $("#tipo_carrera").addClass("is-invalid");
-                } else if (monto == null || monto.length == 0 || isNaN(monto)) {
+                } else if (monto == null || monto.length == 0) {
                     $("#monto").addClass("is-invalid");
                 } else if (num_cuotas == null || num_cuotas.length == 0) {
                     $("#num_cuotas").addClass("is-invalid");
@@ -449,13 +469,15 @@
                     $("#email_confirm").addClass("is-invalid");
                 } else if (telefono.length == 0 || !validarSiNumero(telefono)) {
                     $("#telefono").addClass("is-invalid");
-                } else if (ingresos_usuario.length == 0 || !validarSiNumero(ingresos_usuario)) {
+                } else if (ingresos_usuario.length == 0) {
                     $("#ingresos_usuario").addClass("is-invalid");
                 } else if (acceptTerms.checked == false) {
                     $("#not_accept_term").show();
                 } else if (email != email_confirm) {
                     $("#email").addClass("is-invalid");
                     $("#email_confirm").addClass("is-invalid");
+                } else if ((ano2 < ano1) || ((ano2 - ano1) < 18)) {
+                    $("#fecha_expedicion").addClass("is-invalid");
                 } else {
                     $("select").removeClass("is-invalid");
                     $("input").removeClass("is-invalid");
@@ -497,7 +519,7 @@
                 var fecha_pago = $("#fecha_pago").val();
                 var afiliado = $("#afiliado").val();
                 var tipo_carrera = $("#tipo_carrera").val();
-                var monto = $("#monto").val();
+                var monto = ($("#monto").val()).replace(/,/g, "");;
                 var num_cuotas = $("#num_cuotas").val();
                 var tipo_identificacion = $("#tipo_identificacion").val();
                 var identificacion = $("#identificacion").val();
@@ -508,10 +530,15 @@
                 var email = $("#email").val();
                 var email_confirm = $("#email_confirm").val();
                 var telefono = $("#telefono").val();
-                var ingresos_usuario = $("#ingresos_usuario").val();
+                var ingresos_usuario = ($("#ingresos_usuario").val()).replace(/,/g, "");;
                 var acceptTerms = document.getElementById('acceptTerms');
                 var valor_cuota = $("#valor_cuota").text();
                 var valor_aval = $("#valor_aval").text();
+
+                let val1 = fecha_nacimiento.split("-");
+                let val2 = fecha_expedicion.split("-");
+                let ano1 = val1[0];
+                let ano2 = val2[0];
 
                 //Remove Class: $("p").removeClass("myClass yourClass")
                 //Add Class: $("#identificacion").addClass("is-invalid");
@@ -527,7 +554,7 @@
                     $("#afiliado").addClass("is-invalid");
                 } else if (tipo_carrera === null || tipo_carrera == 0) {
                     $("#tipo_carrera").addClass("is-invalid");
-                } else if (monto == null || monto.length == 0 || isNaN(monto)) {
+                } else if (monto == null || monto.length == 0) {
                     $("#monto").addClass("is-invalid");
                 } else if (num_cuotas == null || num_cuotas.length == 0) {
                     $("#num_cuotas").addClass("is-invalid");
@@ -545,17 +572,24 @@
                     $("#primer_nombre").addClass("is-invalid");
                 } else if (validateEmail(email)) {
                     $("#email").addClass("is-invalid");
-                } else if (validateEmail(email)) {
+                } else if (validateEmail(email_confirm)) {
+                    $("#email_confirm").addClass("is-invalid");
+                } else if (email != email_confirm) {
+                    $("#email").addClass("is-invalid");
                     $("#email_confirm").addClass("is-invalid");
                 } else if (telefono.length == 0 || !validarSiNumero(telefono)) {
                     $("#telefono").addClass("is-invalid");
-                } else if (ingresos_usuario.length == 0 || !validarSiNumero(ingresos_usuario)) {
+                } else if (ingresos_usuario.length == 0) {
                     $("#ingresos_usuario").addClass("is-invalid");
                 } else if (acceptTerms.checked == false) {
                     $("#not_accept_term").show();
                 } else if (email != email_confirm) {
                     $("#email").addClass("is-invalid");
                     $("#email_confirm").addClass("is-invalid");
+                } else if ((calcularEdad("fecha_nacimiento") < 17 )) {
+                    $("#fecha_nacimiento").addClass("is-invalid");
+                } else if ((ano2 < ano1) || ((ano2 - ano1) < 18)) {
+                    $("#fecha_expedicion").addClass("is-invalid");
                 } else {
 
                     $("select").removeClass("is-invalid");
@@ -636,7 +670,6 @@
             } else {
                 return false
             }
-
         }
 
         //Validar Email
@@ -647,7 +680,6 @@
             } else {
                 return true;
             }
-
         }
 
         function validateFlied(field) {
@@ -662,27 +694,168 @@
                     $(field).addClass("is-invalid");
                 }
             } else if (!typeInput && (nameInput == "email" || nameInput == "email_confirm")) { //Email 
-                if (validateEmail(valueInput)) {
+                if (validateEmail(valueInput) || (($("#email").val()) != ($("#email_confirm").val()))) {
                     $(field).addClass("is-invalid");
+                    $("#email").addClass("is-invalid");
                 } else {
                     $(field).removeClass("is-invalid");
+                    $("#email").removeClass("is-invalid");
+                    $("#email_confirm").removeClass("is-invalid");
                 }
-            } else if (!typeInput && (nameInput == "primer_apellido" || nameInput == "primer_nombre")) { //Email 
+            } else if (!typeInput && (nameInput == "primer_apellido" || nameInput == "primer_nombre")) {
                 if (valueInput.length == 0 || /^\s+$/.test(valueInput)) {
                     $(field).addClass("is-invalid");
                 } else {
                     $(field).removeClass("is-invalid");
                 }
-            } else {   //tipo input numerico
-                if (valueInput.length != 0 && validarSiNumero(valueInput)) {
-                    $(field).removeClass("is-invalid");
-                } else {
+            } else if ((nameInput == "fecha_nacimiento")) {   //Fecha
+                // let nac = $("#fecha_nacimiento").val();
+                let edadFn = calcularEdad("fecha_nacimiento");
+                if (edadFn < 17) {
                     $(field).addClass("is-invalid");
+                } else {
+                    $(field).removeClass("is-invalid");
+                }
+            } else if ((nameInput == "fecha_expedicion")) {   //Fecha()
+                let nac = $("#fecha_nacimiento").val();
+                let exp = $("#fecha_expedicion").val();
+                let val1 = nac.split("-");
+                let val2 = exp.split("-");
+                let ano1 = val1[0];
+                let ano2 = val2[0];
+                if (nac != "" || nac != null) {
+                    if (ano2 < ano1) {
+                        $(field).addClass("is-invalid");
+                    } else if ((ano2 - ano1) < 18) {
+                        $(field).addClass("is-invalid");
+                    } else {
+                        $(field).removeClass("is-invalid");
+                    }
                 }
             }
+        }
 
+        function solonumerosMonto() {
+            //solo numeros
+            $('#monto').keypress(function (e, x) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    return false;
+                }
+            });
+            //Formato de miles
+            $('#monto').keyup(function (e) {
+                $(this).val($(this).val().replace(/,/g, "").toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            });
+        }
 
+        function solonumerosIngresos() {
+            //solo numeros
+            $('#ingresos_usuario').keypress(function (e, x) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    return false;
+                }
+            });
+            //Formato de miles
+            $('#ingresos_usuario').keyup(function (e) {
+                $(this).val($(this).val().replace(/,/g, "").toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            });
+        }
 
+        function isValidDate(day, month, year) {
+            var dteDate;
+            month = month - 1;
+            // Establecemos un objeto Data con los valore recibidos
+            // Los parametros son: año, mes, dia, hora, minuto y segundos
+            // getDate(); devuelve el dia como un entero entre 1 y 31
+            // getDay(); devuelve un num del 0 al 6 indicando siel dia es lunes,
+            //   martes, miercoles ...
+            // getHours(); Devuelve la hora
+            // getMinutes(); Devuelve los minutos
+            // getMonth(); devuelve el mes como un numero de 0 a 11
+            // getTime(); Devuelve el tiempo transcurrido en milisegundos desde el 1
+            //   de enero de 1970 hasta el momento definido en el objeto date
+            // setTime(); Establece una fecha pasandole en milisegundos el valor de esta.
+            // getYear(); devuelve el año
+            // getFullYear(); devuelve el año
+            dteDate = new Date(year, month, day);
+
+            //Devuelva true o false...
+            return ((day == dteDate.getDate()) && (month == dteDate.getMonth()) && (year == dteDate.getFullYear()));
+        }
+
+        /**
+         * Funcion para validar una fecha
+         * Tiene que recibir:
+         *  La fecha en formato ingles yyyy-mm-dd
+         * Devuelve:
+         *  true-Fecha correcta
+         *  false-Fecha Incorrecta
+         */
+        function validate_fecha(fecha) {
+            var patron = new RegExp("^(19|20)+([0-9]{2})([-])([0-9]{1,2})([-])([0-9]{1,2})$");
+
+            if (fecha.search(patron) == 0) {
+                var values = fecha.split("-");
+                if (isValidDate(values[2], values[1], values[0])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Esta función calcula la edad de una persona y los meses
+         * La fecha la tiene que tener el formato yyyy-mm-dd que es
+         * metodo que por defecto lo devuelve el <input type="date">
+         */
+        function calcularEdad(campo) {
+            var fecha = document.getElementById(campo).value;
+            if (validate_fecha(fecha) == true) {
+                // Si la fecha es correcta, calculamos la edad
+                var values = fecha.split("-");
+                var dia = values[2];
+                var mes = values[1];
+                var ano = values[0];
+                var edad = null;
+
+                // cogemos los valores actuales
+                var fecha_hoy = new Date();
+                var ahora_ano = fecha_hoy.getYear();
+                var ahora_mes = fecha_hoy.getMonth() + 1;
+                var ahora_dia = fecha_hoy.getDate();
+
+                // realizamos el calculo
+                var edad = (ahora_ano + 1900) - ano;
+                if (ahora_mes < mes) {
+                    edad--;
+                }
+                if ((mes == ahora_mes) && (ahora_dia < dia)) {
+                    edad--;
+                }
+                if (edad > 1900) {
+                    edad -= 1900;
+                }
+
+                // calculamos los meses
+                // var meses = 0;
+                // if (ahora_mes > mes)
+                //     meses = ahora_mes - mes;
+                // if (ahora_mes < mes)
+                //     meses = 12 - (mes - ahora_mes);
+                // if (ahora_mes == mes && dia > ahora_dia)
+                //     meses = 11;
+
+                // calculamos los dias
+                // var dias = 0;
+                // if (ahora_dia > dia)
+                //     dias = ahora_dia - dia;
+                // if (ahora_dia < dia) {
+                //     ultimoDiaMes = new Date(ahora_ano, ahora_mes, 0);
+                //     dias = ultimoDiaMes.getDate() - (dia - ahora_dia);
+                // }
+
+                return edad;
+            }
         }
 
     </script>
@@ -764,16 +937,8 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="identificacion"> Identificación:</label>
-                                    <input type="text" class="form-control" id="identificacion"
+                                    <input type="number" class="form-control" id="identificacion" maxlength="10"
                                         onblur="validateFlied(this)" required>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 form--izq">
-                                <div class="form-group">
-                                    <label for="fecha-exp">Fecha de expedición de la cédula:</label>
-                                    <input type="text" class="form-control" id="fecha_expedicion"
-                                        name="fecha_expedicion" required readonly>
                                 </div>
                             </div>
 
@@ -781,9 +946,18 @@
                                 <div class="form-group">
                                     <label for="fecha-nacimiento">Fecha de nacimiento:</label>
                                     <input type="text" class="form-control" id="fecha_nacimiento"
-                                        name="fecha_nacimiento" required readonly>
+                                        name="fecha_nacimiento" onchange="validateFlied(this)" required readonly>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 form--izq">
+                                <div class="form-group">
+                                    <label for="fecha-exp">Fecha de expedición de la cédula:</label>
+                                    <input type="text" class="form-control" id="fecha_expedicion"
+                                        name="fecha_expedicion" onchange="validateFlied(this)" required readonly>
+                                </div>
+                            </div>
+
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="primer-apellido">Primer Apellido:</label>
@@ -819,7 +993,7 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="telefono">Celular:</label>
-                                    <input type="text" class="form-control" maxlength="10" id="telefono"
+                                    <input type="number" class="form-control" maxlength="10" id="telefono"
                                         onblur="validateFlied(this)" required>
                                 </div>
                             </div>
