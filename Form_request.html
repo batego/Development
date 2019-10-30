@@ -15,6 +15,13 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
+    <!-- <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css">
+    </link>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script> -->
+
+
 
     <script src="./datepicker.js"></script>
 
@@ -23,12 +30,12 @@
     <script>
         $(document).ready(function () {
 
-            solonumerosIngresos();
-            solonumerosMonto();
+            solonumerosIngresos();//ok
+            solonumerosMonto();//ok
 
-            $("#solicitar").prop('disabled', true);
+            $("#solicitar").prop('disabled', true);//ok
             //carga ciudades
-            $.ajax({
+            $.ajax({//ok
                 type: "POST",
                 url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/cities',
                 async: false,
@@ -44,26 +51,30 @@
                 }
             });
             //mostrar fechas
-            mostrarFechas();
+            mostrarFechas();//ok
             //calendar
             $("#fecha_expedicion").datepicker({
                 format: 'yyyy-mm-dd',
-                autoclose: true
+                autoclose: true,
+                showOnFocus: true
+
             });
             //calendar
             $("#fecha_nacimiento").datepicker({
                 format: 'yyyy-mm-dd',
-                autoclose: true
+                autoclose: true,
+                showOnFocus: true
             });
             //evento para desabilitar el boton de solicitar si se ha cambiado el monto.
-            $("#monto").change(function () {
+            $("#monto").change(function () { //ok
                 $("#solicitar").prop('disabled', true);
             });
-            $("#identificacion").change(function () {
+
+            $("#identificacion").change(function () {//ok
                 $("#solicitar").prop('disabled', true);
             });
             //cargar afiliado dependiendo de la ciudad
-            $('#citys').change(function () {
+            $('#citys').change(function () {//ok
                 $("#afiliado").html("");
                 $('#afiliado').append('<option disabled selected></option>');
                 var _ciudad = $(this).val();
@@ -86,8 +97,9 @@
                     }
                 });
             });
+
             //cargar plazos dependiendo del tipo de carrera
-            $('#tipo_carrera').change(function () {
+            $('#tipo_carrera').change(function () {//ok
                 var plazos = buildDues();
                 // console.log("plazos:", plazos);
                 $("#num_cuotas").html("");
@@ -99,67 +111,73 @@
 
             //Evento que valida al salir del input si cliente existe, si existe inabilita el formulario y 
             //muestra msj informativo, en caso de que no, puede siguir llenando el formulario
-            $('#identificacion').blur(function () {
+            $('#identificacion').change(function () {//ok
                 var _identificacion = $(this).val();
-                $.ajax({
-                    type: "GET",
-                    url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/validate_customer/' + _identificacion,
-                    contentType: 'application/json',
-                    success: function (data) {
-                        // console.info("existe:", data.escliente);
-                        //  alert("Cliente:"+ (data.escliente == "true" ? "Eres cliente, vamos al login" : "No es cliente"));
-                        if (data.escliente == "true") {
-                            $("#simular").prop('disabled', true);
-                            $("#citys").prop('disabled', true);
-                            $("#fecha_pago").prop('disabled', true);
-                            $("#afiliado").prop('disabled', true);
-                            $("#tipo_carrera").prop('disabled', true);
-                            $("#monto").prop('disabled', true);
-                            $("#num_cuotas").prop('disabled', true);
-                            $("#tipo_identificacion").prop('disabled', true);
-                            // $("#identificacion").prop('disabled',true);
-                            $("#fecha_expedicion").prop('disabled', true);
-                            $("#fecha_nacimiento").prop('disabled', true);
-                            $("#primer_apellido").prop('disabled', true);
-                            $("#primer_nombre").prop('disabled', true);
-                            $("#email").prop('disabled', true);
-                            $("#email_confirm").prop('disabled', true);
-                            $("#telefono").prop('disabled', true);
-                            $("#ingresos_usuario").prop('disabled', true);
-                            $("#acceptTerms").prop('disabled', true);
-                            // $("#identificacion").focus();
-                            document.getElementById("identificacion").focus();
-                            // alert("Vemos que eres un cliente Fintra, inicia sesión");
+                if (validarSiNumero(_identificacion)) {
+                    $("#identificacion").removeClass("is-invalid");
+                    $.ajax({
+                        type: "GET",
+                        url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/validate_customer/' + _identificacion,
+                        contentType: 'application/json',
+                        success: function (data) {
+                            // console.info("existe:", data.escliente);
+                            //  alert("Cliente:"+ (data.escliente == "true" ? "Eres cliente, vamos al login" : "No es cliente"));
+                            if (data.escliente == "true") {
+                                $("#simular").prop('disabled', true);
+                                $("#citys").prop('disabled', true);
+                                $("#fecha_pago").prop('disabled', true);
+                                $("#afiliado").prop('disabled', true);
+                                $("#tipo_carrera").prop('disabled', true);
+                                $("#monto").prop('disabled', true);
+                                $("#num_cuotas").prop('disabled', true);
+                                $("#tipo_identificacion").prop('disabled', true);
+                                // $("#identificacion").prop('disabled',true);
+                                $("#fecha_expedicion").prop('disabled', true);
+                                $("#fecha_nacimiento").prop('disabled', true);
+                                $("#primer_apellido").prop('disabled', true);
+                                $("#primer_nombre").prop('disabled', true);
+                                $("#email").prop('disabled', true);
+                                $("#email_confirm").prop('disabled', true);
+                                $("#telefono").prop('disabled', true);
+                                $("#ingresos_usuario").prop('disabled', true);
+                                $("#acceptTerms").prop('disabled', true);
+                                // $("#identificacion").focus();
+                                document.getElementById("identificacion").focus();
+                                alert("Vemos que eres un cliente Fintra, inicia sesión");
+                            }
+                            else {
+                                $("#simular").prop('disabled', false);
+                                $("#citys").prop('disabled', false);
+                                $("#fecha_pago").prop('disabled', false);
+                                $("#afiliado").prop('disabled', false);
+                                $("#tipo_carrera").prop('disabled', false);
+                                $("#monto").prop('disabled', false);
+                                $("#num_cuotas").prop('disabled', false);
+                                $("#tipo_identificacion").prop('disabled', false);
+                                // $("#identificacion").prop('disabled',true);
+                                $("#fecha_expedicion").prop('disabled', false);
+                                $("#fecha_nacimiento").prop('disabled', false);
+                                $("#primer_apellido").prop('disabled', false);
+                                $("#primer_nombre").prop('disabled', false);
+                                $("#email").prop('disabled', false);
+                                $("#email_confirm").prop('disabled', false);
+                                $("#telefono").prop('disabled', false);
+                                $("#ingresos_usuario").prop('disabled', false);
+                                $("#acceptTerms").prop('disabled', false);
+                                document.getElementById("fecha_expedicion").focus();
+                            }
+                        },
+                        error: function () {
+                            console.log("No se ha podido obtener la información");
                         }
-                        else {
-                            $("#simular").prop('disabled', false);
-                            $("#citys").prop('disabled', false);
-                            $("#fecha_pago").prop('disabled', false);
-                            $("#afiliado").prop('disabled', false);
-                            $("#tipo_carrera").prop('disabled', false);
-                            $("#monto").prop('disabled', false);
-                            $("#num_cuotas").prop('disabled', false);
-                            $("#tipo_identificacion").prop('disabled', false);
-                            // $("#identificacion").prop('disabled',true);
-                            $("#fecha_expedicion").prop('disabled', false);
-                            $("#fecha_nacimiento").prop('disabled', false);
-                            $("#primer_apellido").prop('disabled', false);
-                            $("#primer_nombre").prop('disabled', false);
-                            $("#email").prop('disabled', false);
-                            $("#email_confirm").prop('disabled', false);
-                            $("#telefono").prop('disabled', false);
-                            $("#ingresos_usuario").prop('disabled', false);
-                            $("#acceptTerms").prop('disabled', false);
-                            document.getElementById("fecha_expedicion").focus();
-                        }
-                    },
-                    error: function () {
-                        console.log("No se ha podido obtener la información");
-                    }
-                });
+                    });
+
+                }else{
+                    $("#identificacion").addClass("is-invalid");
+                }
             });
 
-            function buildDues() {
+            function buildDues() {//ok
                 // alert($("select[id=tipo_carrera]").val());
                 var tipo_carera = $("select[id=tipo_carrera]").val();
                 var inicial = 0;
@@ -178,7 +196,7 @@
                 return buildArrayDues(inicial, final);
             }
 
-            function buildArrayDues(initial, final) {
+            function buildArrayDues(initial, final) { //ok
                 let arrayDues = [];
 
                 for (var i = initial; i <= final; i++) {
@@ -187,14 +205,14 @@
                 return arrayDues;
             }
 
-            function mostrarFechas() {
+            function mostrarFechas() {//ok
                 var fechas = carcularFecha();
                 $.each(fechas, function (indice, color) {
                     $("#fecha_pago").append('<option value=' + color + '>' + color + '</option>');
                 });
             }
 
-            function carcularFecha(year, mo, day) {
+            function carcularFecha(year, mo, day) { //ok
                 var opcion0;
                 var opcion1;
                 var opcion2;
@@ -469,7 +487,7 @@
                     $("#email_confirm").addClass("is-invalid");
                 } else if (telefono.length == 0 || !validarSiNumero(telefono)) {
                     $("#telefono").addClass("is-invalid");
-                } else if (ingresos_usuario.length == 0) {
+                } else if (ingresos_usuario.length == 0 || /^\s+$/.test(ingresos_usuario)) {
                     $("#ingresos_usuario").addClass("is-invalid");
                 } else if (acceptTerms.checked == false) {
                     $("#not_accept_term").show();
@@ -494,7 +512,7 @@
                     };
                     $.ajax({
                         type: "POST",
-                        url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/approximate_fee',
+                        url: 'http://192.168.140.155:8084/fintracredit/webresources/loans/approximate_fee',
                         async: false,
                         dataType: "json",
                         contentType: 'application/json',
@@ -503,7 +521,7 @@
                             // console.log(data);                            
                             document.getElementById("valor_cuota").innerHTML = data.valor_cuota;
                             document.getElementById("valor_aval").innerHTML = data.valor_aval;
-                            $("#solicitar").prop('disabled', false);
+                            $("#solicitar").prop('disabled', false);                            
                             $("#sim").show();
                         },
                         error: function () {
@@ -586,7 +604,7 @@
                 } else if (email != email_confirm) {
                     $("#email").addClass("is-invalid");
                     $("#email_confirm").addClass("is-invalid");
-                } else if ((calcularEdad("fecha_nacimiento") < 17 )) {
+                } else if ((calcularEdad("fecha_nacimiento") < 17)) {
                     $("#fecha_nacimiento").addClass("is-invalid");
                 } else if ((ano2 < ano1) || ((ano2 - ano1) < 18)) {
                     $("#fecha_expedicion").addClass("is-invalid");
@@ -636,7 +654,7 @@
                     };
                     $.ajax({
                         type: "PUT",
-                        url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/edu-pre-approved-2',
+                        url: 'http://192.168.140.155:8084/fintracredit/webresources/loans/edu-pre-approved-2',
                         async: false,
                         headers: {
                             'dataType': 'json',
@@ -647,6 +665,7 @@
                         data: JSON.stringify(presol),
                         success: function (data) {
                             console.log('Msg:', data.data.msg);
+
                             alert(data.data.msg + 'Numero de Slicitud: ' + data.data.numero_solicitud);
                             $("#presolicitud")[0].reset();
                             $("#sim").hide();
@@ -664,7 +683,7 @@
         //Utils
 
         //Validar numero
-        function validarSiNumero(numero) {
+        function validarSiNumero(numero) { //ok
             if (/^([0-9])*$/.test(numero)) {
                 return true;
             } else {
@@ -673,8 +692,8 @@
         }
 
         //Validar Email
-        function validateEmail(_mail) {
-            var exp = /\w+@\w+\.+([a-z]{2,4})$/;
+        function validateEmail(_mail) { //ok
+            var exp = /\w+@\w+\.+([a-zA-Z]{2,4})$/;
             if (exp.test(_mail)) {
                 return false;
             } else {
@@ -682,7 +701,7 @@
             }
         }
 
-        function validateFlied(field) {
+        function validateFlied(field) { //ok
             var valueInput = $(field).val();
             var typeInput = $(field).prop('type') == 'select-one';
             var nameInput = $(field).attr("name");
@@ -732,10 +751,22 @@
                         $(field).removeClass("is-invalid");
                     }
                 }
+            } else if ((nameInput == "telefono" || nameInput == "ingresos_usuario")) {
+                if (valueInput.length == 0 || /^\s+$/.test(valueInput)) {
+                    $(field).addClass("is-invalid");
+                } else {
+                    $(field).removeClass("is-invalid");
+                }
+            } else if (nameInput == "monto") {
+                if (valueInput.length == 0 || /^\s+$/.test(valueInput)) {
+                    $(field).addClass("is-invalid");
+                } else {
+                    $(field).removeClass("is-invalid");
+                }
             }
         }
 
-        function solonumerosMonto() {
+        function solonumerosMonto() {//ok
             //solo numeros
             $('#monto').keypress(function (e, x) {
                 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
@@ -748,7 +779,7 @@
             });
         }
 
-        function solonumerosIngresos() {
+        function solonumerosIngresos() { //ok
             //solo numeros
             $('#ingresos_usuario').keypress(function (e, x) {
                 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
@@ -761,7 +792,7 @@
             });
         }
 
-        function isValidDate(day, month, year) {
+        function isValidDate(day, month, year) { //ok
             var dteDate;
             month = month - 1;
             // Establecemos un objeto Data con los valore recibidos
@@ -791,7 +822,7 @@
          *  true-Fecha correcta
          *  false-Fecha Incorrecta
          */
-        function validate_fecha(fecha) {
+        function validate_fecha(fecha) {  //ok
             var patron = new RegExp("^(19|20)+([0-9]{2})([-])([0-9]{1,2})([-])([0-9]{1,2})$");
 
             if (fecha.search(patron) == 0) {
@@ -808,7 +839,7 @@
          * La fecha la tiene que tener el formato yyyy-mm-dd que es
          * metodo que por defecto lo devuelve el <input type="date">
          */
-        function calcularEdad(campo) {
+        function calcularEdad(campo) { //ok
             var fecha = document.getElementById(campo).value;
             if (validate_fecha(fecha) == true) {
                 // Si la fecha es correcta, calculamos la edad
@@ -836,35 +867,44 @@
                     edad -= 1900;
                 }
 
-                // calculamos los meses
-                // var meses = 0;
-                // if (ahora_mes > mes)
-                //     meses = ahora_mes - mes;
-                // if (ahora_mes < mes)
-                //     meses = 12 - (mes - ahora_mes);
-                // if (ahora_mes == mes && dia > ahora_dia)
-                //     meses = 11;
-
-                // calculamos los dias
-                // var dias = 0;
-                // if (ahora_dia > dia)
-                //     dias = ahora_dia - dia;
-                // if (ahora_dia < dia) {
-                //     ultimoDiaMes = new Date(ahora_ano, ahora_mes, 0);
-                //     dias = ultimoDiaMes.getDate() - (dia - ahora_dia);
-                // }
 
                 return edad;
             }
         }
 
     </script>
+
+    <style>
+        body {
+            /* background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 19%, rgba(0,212,255,1) 100%); */
+            margin: 2em 2em;
+            color: white;
+            /* background-image: linear-gradient(19deg, #21D4FD 0%, #B721FF 100%); */
+            background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+        }
+
+        .inputWhithIcon input[type=text]{
+            padding-left: 0px;
+        }
+
+        .inputWhithIcon{
+            position: relative;
+            
+        }
+        .inputWhithIcon i{
+            position: absolute;
+            right: 5px;
+            top: 6px;
+            padding: 0px 8px;
+            
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container blue">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12 d-flex justify-content-center ">
                 <!--esto no va -->
                 <div class="fusion-builder-row fusion-row">
                     <form id="presolicitud">
@@ -909,7 +949,7 @@
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="valor-semestre">Valor semestre:</label>
-                                    <input type="text" class="form-control" id="monto" onblur="validateFlied(this)"
+                                    <input type="text" class="form-control" id="monto" name="monto" onblur="validateFlied(this)"
                                         required>
                                 </div>
                             </div>
@@ -945,16 +985,22 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="fecha-nacimiento">Fecha de nacimiento:</label>
-                                    <input type="text" class="form-control" id="fecha_nacimiento"
-                                        name="fecha_nacimiento" onchange="validateFlied(this)" required readonly>
+                                    <div class="inputWhithIcon">
+                                        <input type="text" class="form-control" id="fecha_nacimiento"
+                                            name="fecha_nacimiento" onchange="validateFlied(this)" required readonly>
+                                        <i aria-hidden="true"><img style="width: 25px" src="http://192.168.140.156/fintra/wp-content/uploads/2019/10/calendar.png"></i>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="fecha-exp">Fecha de expedición de la cédula:</label>
-                                    <input type="text" class="form-control" id="fecha_expedicion"
-                                        name="fecha_expedicion" onchange="validateFlied(this)" required readonly>
+                                    <div class="inputWhithIcon">
+                                        <input type="text" class="form-control" id="fecha_expedicion"
+                                            name="fecha_expedicion" onchange="validateFlied(this)" required readonly>
+                                            <i aria-hidden="true"><img style="width: 25px" src="http://192.168.140.156/fintra/wp-content/uploads/2019/10/calendar.png"></i>
+                                    </div>
                                 </div>
                             </div>
 
@@ -993,8 +1039,8 @@
                             <div class="col-md-6 form--der">
                                 <div class="form-group">
                                     <label for="telefono">Celular:</label>
-                                    <input type="number" class="form-control" maxlength="10" id="telefono"
-                                        onblur="validateFlied(this)" required>
+                                    <input type="number" class="form-control" maxlength="10" name="telefono"
+                                        id="telefono" onblur="validateFlied(this)" required>
                                 </div>
                             </div>
 
@@ -1002,33 +1048,33 @@
                                 <div class="form-group">
                                     <label for="ingresos">Ingresos mensuales:</label>
                                     <input type="text" class="form-control" id="ingresos_usuario"
-                                        onblur="validateFlied(this)" required>
+                                        name="ingresos_usuario" onblur="validateFlied(this)" required>
                                 </div>
                             </div>
-
-                            <div class="col-md-6 form--der" id="sim" style="display: none; border-radius: 5px;">
-                                <div class="form-group">
-                                    <div class="btn btn--general">
-                                        Valor apróximado de cuota $<p id="valor_cuota"></p>
-                                        <p style="display: none" id="valor_aval"></p>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8" id="sim" style="display: block; border-radius: 5px;">
+                                        <button class="btn btn-secondary btn-lg btn-block" id="simular" disabled>Valor apróximado de cuota $ <p style="display: inline" id="valor_cuota">250000</p></button>
+                                        <p style="display: none" id="valor_aval"></p>                                                                 
                             </div>
-
+                        </div>
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group terminos">
                                     <div class="checkbox check--box">
-                                        <label><input name="remember" type="checkbox" id="acceptTerms" /><a href=""
-                                                style="color: #37BFFA; margin-left: 0.5rem; border-bottom: 1px #37BFFA solid;">Acepto
+                                        <label><input name="remember" type="checkbox" id="acceptTerms" checked /><a href=""
+                                                style="color: rgb(236, 240, 241); margin-left: 0.5rem; border-bottom: 1px #37BFFA solid;">Acepto
                                                 los términos y condiciones</a></label>
-                                        <p id="not_accept_term" class="text-danger" style="display: none">Debes Acptar
-                                            los Terminos y condiciones</p>
+                                        <p id="not_accept_term" class="text-danger" style="display: none">
+                                            Debes Acptar los Terminos y condiciones</p>
                                     </div>
                                     <div class="content--btn">
-                                        <button class="fusion-button button-flat simular--btn btn--general"
+                                        <button
+                                            class="btn btn-secondary fusion-button button-flat simular--btn btn--general"
                                             id="simular">SIMULAR</button>
 
-                                        <button class="fusion-button button-flat solicitar--btn btn--general"
+                                        <button
+                                            class="btn btn-secondary fusion-button button-flat solicitar--btn btn--general"
                                             id="solicitar" disabled>SOLICITAR</button>
                                     </div>
                                 </div>
