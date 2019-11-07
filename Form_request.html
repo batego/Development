@@ -512,7 +512,7 @@
                     };
                     $.ajax({
                         type: "POST",
-                        url: 'http://192.168.140.155:8084/fintracredit/webresources/loans/approximate_fee',
+                        url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/approximate_fee',
                         async: false,
                         dataType: "json",
                         contentType: 'application/json',
@@ -552,6 +552,7 @@
                 var acceptTerms = document.getElementById('acceptTerms');
                 var valor_cuota = $("#valor_cuota").text();
                 var valor_aval = $("#valor_aval").text();
+                 var codigo_asesor = $("#codigo_asesor").val();
 
                 let val1 = fecha_nacimiento.split("-");
                 let val2 = fecha_expedicion.split("-");
@@ -649,12 +650,12 @@
                         monto_renovacion: "0",
                         politica: "",
                         negocio_origen: "",
-                        tipo_carrera: tipo_carrera//,
-                        //asesor: "antojsh"
+                        tipo_carrera: tipo_carrera,
+                        codigo_asesor: codigo_asesor == "" ? "" : codigo_asesor
                     };
                     $.ajax({
                         type: "PUT",
-                        url: 'http://192.168.140.155:8084/fintracredit/webresources/loans/edu-pre-approved-2',
+                        url: 'http://piloto.fintra.co:8084/fintracredit/webresources/loans/edu-pre-approved-2',
                         async: false,
                         headers: {
                             'dataType': 'json',
@@ -1051,10 +1052,21 @@
                                         name="ingresos_usuario" onblur="validateFlied(this)" required>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 form--der">
+                                <div class="form-group">
+                                    <div id="optional" style="display: flex; justify-content: space-between">
+                                        <label for="asesor">Codigo Asesor:</label>
+                                        <p>Opcional</p>
+                                    </div>
+                                    <input type="text" class="form-control" id="codigo_asesor" name="codigo_asesor" maxlength="4" onblur="validateFlied(this)" >
+                                </div>
+                            </div>
+
                         </div>
                         <div class="row">
-                            <div class="col-md-8" id="sim" style="display: block; border-radius: 5px;">
-                                        <button class="btn btn-secondary btn-lg btn-block" id="simular" disabled>Valor apróximado de cuota $ <p style="display: inline" id="valor_cuota">250000</p></button>
+                            <div class="col-md-8" id="sim" style="display: none; border-radius: 5px;">
+                                        <button class="btn btn-secondary btn-lg btn-block" id="simular" disabled>Valor apróximado de cuota $ <p style="display: inline" id="valor_cuota"></p></button>
                                         <p style="display: none" id="valor_aval"></p>                                                                 
                             </div>
                         </div>
