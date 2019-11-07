@@ -651,7 +651,7 @@
                         politica: "",
                         negocio_origen: "",
                         tipo_carrera: tipo_carrera,
-                        codigo_asesor: codigo_asesor == "" ? "" : codigo_asesor
+                        codigo_asesor: codigo_asesor
                     };
                     $.ajax({
                         type: "PUT",
@@ -1066,7 +1066,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8" id="sim" style="display: none; border-radius: 5px;">
-                                        <button class="btn btn-secondary btn-lg btn-block" id="simular" disabled>Valor apróximado de cuota $ <p style="display: inline" id="valor_cuota"></p></button>
+                                        Valor apróximado de cuota $ <p style="display: inline" id="valor_cuota"></p>
                                         <p style="display: none" id="valor_aval"></p>                                                                 
                             </div>
                         </div>
