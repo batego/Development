@@ -56,14 +56,14 @@
             $("#fecha_expedicion").datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
-                showOnFocus: true
+                showOnFocus: false
 
             });
             //calendar
             $("#fecha_nacimiento").datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
-                showOnFocus: true
+                showOnFocus: false
             });
             //evento para desabilitar el boton de solicitar si se ha cambiado el monto.
             $("#monto").change(function () { //ok
@@ -98,12 +98,26 @@
                 });
             });
 
-            //cargar plazos dependiendo del tipo de carrera
             $('#tipo_carrera').change(function () {//ok
+                let montotc = ($("#monto").val()).replace(/,/g, "");    
+                if(montotc != ""){
+                    var plazos = buildDues();
+                    // console.log("plazos:", plazos);
+                    $("#num_cuotas").html("");
+                    $('#num_cuotas').append('<option disabled selected>Seleccione</option>');
+                    $.each(plazos, function (indice, data) {
+                        $("#num_cuotas").append('<option value=' + data + '>' + data + '</option>');
+                    });
+                }
+                
+            });
+
+            //cargar plazos dependiendo del tipo de carrera
+            $('#monto').blur(function () {//ok
                 var plazos = buildDues();
                 // console.log("plazos:", plazos);
                 $("#num_cuotas").html("");
-                $('#num_cuotas').append('<option disabled selected></option>');
+                $('#num_cuotas').append('<option disabled selected>Seleccione</option>');
                 $.each(plazos, function (indice, data) {
                     $("#num_cuotas").append('<option value=' + data + '>' + data + '</option>');
                 });
@@ -164,7 +178,7 @@
                                 $("#telefono").prop('disabled', false);
                                 $("#ingresos_usuario").prop('disabled', false);
                                 $("#acceptTerms").prop('disabled', false);
-                                document.getElementById("fecha_expedicion").focus();
+                                // document.getElementById("fecha_expedicion").focus();
                             }
                         },
                         error: function () {
@@ -187,8 +201,21 @@
                     inicial = 6;
                     final = 8;
                 } else if (tipo_carera == 'POSGRADO') {
-                    inicial = 6;
-                    final = 18;
+                    let montot = ($("#monto").val()).replace(/,/g, "");
+                    if(montot > 0 && montot <= 5000000){
+                        inicial = 6;
+                        final = 12;
+                    } else if(montot > 5000000 && montot <=10000000){
+                        inicial = 6;
+                        final = 18;
+                    } else if (montot > 10000000 && montot <= 20000000) {
+                        inicial = 6;
+                        final = 24;
+                    }else if (montot > 20000000) {
+                        inicial = 6;
+                        final = 36;
+                    }
+                    
                 } else if (tipo_carera == 'CONTINUADA') {
                     inicial = 4;
                     final = 4;
@@ -212,11 +239,8 @@
                 });
             }
 
-            function carcularFecha(year, mo, day) { //ok
-                var opcion0;
-                var opcion1;
-                var opcion2;
-                var opcion3;
+           function carcularFecha(year, mo, day) {
+
                 var date;
                 if (year) {
                     date = new Date(year, mo, day);
@@ -236,25 +260,25 @@
                     if (mes === 12) {
 
                         fecha = (anio + 1) + "-" + "01" + "-02";
-                        opcion0 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = (anio + 1) + "-" + "01" + "-12";
                         opcion1 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "01" + "-17";
                         opcion2 = new Option(fecha, fecha);
-                        fecha = (anio + 1) + "-" + "01" + "-22";
-                        opcion3 = new Option(fecha, fecha);
+                        // fecha = (anio + 1) + "-" + "01" + "-22";
+                        // opcion3 = new Option(fecha, fecha);
 
 
                     } else {
 
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-02";
-                        opcion0 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-12";
                         opcion1 = new Option(fecha, fecha);
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-17";
                         opcion2 = new Option(fecha, fecha);
-                        fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
-                        opcion3 = new Option(fecha, fecha);
+                        // fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
+                        // opcion3 = new Option(fecha, fecha);
 
 
                     }
@@ -266,29 +290,29 @@
                     if (mes === 12) {
 
                         fecha = (anio + 1) + "-" + "01" + "-12";
-                        opcion0 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = (anio + 1) + "-" + "01" + "-17";
                         opcion1 = new Option(fecha, fecha);
-                        fecha = (anio + 1) + "-" + "01" + "-22";
-                        opcion2 = new Option(fecha, fecha);
+                        // fecha = (anio + 1) + "-" + "01" + "-22";
+                        // opcion2 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-02";
-                        opcion3 = new Option(fecha, fecha);
+                        opcion2 = new Option(fecha, fecha);
 
 
                     } else {
 
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-12";
-                        opcion0 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-17";
                         opcion1 = new Option(fecha, fecha);
-                        fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
-                        opcion2 = new Option(fecha, fecha);
+                        // fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
+                        // opcion2 = new Option(fecha, fecha);
                         if (mes === 11) {
                             fecha = (anio + 1) + "-" + "01" + "-02";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
                         } else {
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-02";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
                         }
 
                     }
@@ -299,34 +323,34 @@
                     if (mes === 12) {
 
                         fecha = (anio + 1) + "-" + "01" + "-17";
-                        opcion0 = new Option(fecha, fecha);
-                        fecha = (anio + 1) + "-" + "01" + "-22";
-                        opcion1 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
+                        // fecha = (anio + 1) + "-" + "01" + "-22";
+                        // opcion1 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-02";
-                        opcion2 = new Option(fecha, fecha);
+                        opcion1 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-12";
-                        opcion3 = new Option(fecha, fecha);
+                        opcion2 = new Option(fecha, fecha);
 
 
                     } else {
                         fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-17";
-                        opcion0 = new Option(fecha, fecha);
-                        fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
-                        opcion1 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
+                        // fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
+                        // opcion1 = new Option(fecha, fecha);
 
                         if (mes === 11) {
 
                             fecha = (anio + 1) + "-" + "01" + "-02";
-                            opcion2 = new Option(fecha, fecha);
+                            opcion1 = new Option(fecha, fecha);
                             fecha = (anio + 1) + "-" + "01" + "-12";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
 
                         } else {
 
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-02";
-                            opcion2 = new Option(fecha, fecha);
+                            opcion1 = new Option(fecha, fecha);
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-12";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
                         }
                     }
 
@@ -336,38 +360,38 @@
 
                     if (mes === 12) {
 
-                        fecha = (anio + 1) + "-" + "01" + "-22";
-                        opcion0 = new Option(fecha, fecha);
+                        // fecha = (anio + 1) + "-" + "01" + "-22";
+                        // opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = (anio + 1) + "-" + "02" + "-02";
-                        opcion1 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-12";
-                        opcion2 = new Option(fecha, fecha);
+                        opcion1 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-17";
-                        opcion3 = new Option(fecha, fecha);
+                        opcion2 = new Option(fecha, fecha);
 
 
                     } else {
 
-                        fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
-                        opcion0 = new Option(fecha, fecha);
+                        // fecha = date.getFullYear() + "-" + ((date.getMonth() + 2) > 9 ? (date.getMonth() + 2) : "0" + (date.getMonth() + 2)) + "-22";
+                        // opcion0 = new Option(fecha, fecha, "defauldSelected");
 
                         if (mes === 11) {
 
                             fecha = (anio + 1) + "-" + "01" + "-02";
-                            opcion1 = new Option(fecha, fecha);
+                            opcion0 = new Option(fecha, fecha);
                             fecha = (anio + 1) + "-" + "01" + "-12";
-                            opcion2 = new Option(fecha, fecha);
+                            opcion1 = new Option(fecha, fecha);
                             fecha = (anio + 1) + "-" + "01" + "-17";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
 
                         } else {
 
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-02";
-                            opcion1 = new Option(fecha, fecha);
+                            opcion0 = new Option(fecha, fecha);
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-12";
-                            opcion2 = new Option(fecha, fecha);
+                            opcion1 = new Option(fecha, fecha);
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-17";
-                            opcion3 = new Option(fecha, fecha);
+                            opcion2 = new Option(fecha, fecha);
                         }
                     }
 
@@ -379,13 +403,13 @@
                     if (mes === 12) {
 
                         fecha = (anio + 1) + "-" + "02" + "-02";
-                        opcion0 = new Option(fecha, fecha);
+                        opcion0 = new Option(fecha, fecha, "defauldSelected");
                         fecha = (anio + 1) + "-" + "02" + "-12";
                         opcion1 = new Option(fecha, fecha);
                         fecha = (anio + 1) + "-" + "02" + "-17";
                         opcion2 = new Option(fecha, fecha);
-                        fecha = (anio + 1) + "-" + "02" + "-22";
-                        opcion3 = new Option(fecha, fecha);
+                        // fecha = (anio + 1) + "-" + "02" + "-22";
+                        // opcion3 = new Option(fecha, fecha);
 
 
                     } else {
@@ -393,34 +417,35 @@
                         if (mes === 11) {
 
                             fecha = (anio + 1) + "-" + "01" + "-02";
-                            opcion0 = new Option(fecha, fecha);
+                            opcion0 = new Option(fecha, fecha, "defauldSelected");
                             fecha = (anio + 1) + "-" + "01" + "-12";
                             opcion1 = new Option(fecha, fecha);
                             fecha = (anio + 1) + "-" + "01" + "-17";
                             opcion2 = new Option(fecha, fecha);
-                            fecha = (anio + 1) + "-" + "01" + "-22";
-                            opcion3 = new Option(fecha, fecha);
+                            // fecha = (anio + 1) + "-" + "01" + "-22";
+                            // opcion3 = new Option(fecha, fecha);
 
 
                         } else {
 
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-02";
-                            opcion0 = new Option(fecha, fecha);
+                            opcion0 = new Option(fecha, fecha, "defauldSelected");
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-12";
                             opcion1 = new Option(fecha, fecha);
                             fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-17";
                             opcion2 = new Option(fecha, fecha);
-                            fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-22";
-                            opcion3 = new Option(fecha, fecha);
+                            // fecha = date.getFullYear() + "-" + ((date.getMonth() + 3) > 9 ? (date.getMonth() + 3) : "0" + (date.getMonth() + 3)) + "-22";
+                            // opcion3 = new Option(fecha, fecha);
 
                         }
 
                     }
                 }
 
-                return [opcion0.value, opcion1.value, opcion2.value, opcion3.value]
-            }
+                return [opcion0.value, opcion1.value, opcion2.value]
 
+            }
+            
             $("#simular").click(function (event) {
                 event.preventDefault();
                 var citys = $("#citys").val();
@@ -665,11 +690,16 @@
                         },
                         data: JSON.stringify(presol),
                         success: function (data) {
-                            console.log('Msg:', data.data.msg);
-
-                            alert(data.data.msg + 'Numero de Slicitud: ' + data.data.numero_solicitud);
-                            $("#presolicitud")[0].reset();
-                            $("#sim").hide();
+                            console.log('Msg:', data.data.estado_sol);
+                             if(data.data.estado_sol == 'P'){
+                                alert(data.data.msg + 'Numero de Slicitud: ' + data.data.numero_solicitud);
+                                $("#presolicitud")[0].reset();
+                                $("#sim").hide();
+                                 window.location.href = "http://edu.fintra.co/approved";
+                             }else{
+                                  $("#presolicitud")[0].reset();
+                                  window.location.href = "http://edu.fintra.co/not-approved";
+                             }   
                         },
                         error: function () {
                             console.log("No se ha podido obtener la información");
@@ -913,8 +943,8 @@
                             <div class="col-md-6 form--izq">
                                 <div class="form-group">
                                     <label for="ciudad">Ciudad</label>
-                                    <select class="form-control" id="citys" onblur="validateFlied(this)" required>
-                                        <option disabled selected value></option>
+                                    <select class="form-control" id="citys" onblur="validateFlied(this)" required tabindex="0">
+                                        <option disabled selected value>Selecciona una ciudad</option>
                                     </select>
                                 </div>
                             </div>
@@ -987,7 +1017,7 @@
                                 <div class="form-group">
                                     <label for="fecha-nacimiento">Fecha de nacimiento:</label>
                                     <div class="inputWhithIcon">
-                                        <input type="text" class="form-control" id="fecha_nacimiento"
+                                        <input type="text" class="form-control" id="fecha_nacimiento" tabindex="-1"
                                             name="fecha_nacimiento" onchange="validateFlied(this)" required readonly>
                                         <i aria-hidden="true"><img style="width: 25px" src="http://192.168.140.156/fintra/wp-content/uploads/2019/10/calendar.png"></i>
                                     </div>
@@ -998,7 +1028,7 @@
                                 <div class="form-group">
                                     <label for="fecha-exp">Fecha de expedición de la cédula:</label>
                                     <div class="inputWhithIcon">
-                                        <input type="text" class="form-control" id="fecha_expedicion"
+                                        <input type="text" class="form-control" id="fecha_expedicion" tabindex="-1"
                                             name="fecha_expedicion" onchange="validateFlied(this)" required readonly>
                                             <i aria-hidden="true"><img style="width: 25px" src="http://192.168.140.156/fintra/wp-content/uploads/2019/10/calendar.png"></i>
                                     </div>
