@@ -13,7 +13,7 @@
   "author": "Dereck inc",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gulp-sass": "^4.0.2",
     "materialize-css": "^1.0.0"
   }
